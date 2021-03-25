@@ -1,0 +1,32 @@
+#!/bin/bash
+
+usage() {
+        echo "${0/*\/} --subnets \"<subnet> [<subnet> ...]\" --dns1 <dnsserver> --dns2 <dnsserver>"
+}
+
+
+if [ $# -eq 0 ]; then
+        usage 1>&2 ;
+        exit 1;
+fi
+
+while (( $# )) ; do
+        case $1 in
+                --subnets )
+                        subnets=$2;
+                        shift;shift;;
+                --dns1 )
+                        dns1=$2;
+                        shift;shift;;
+                --dns2 )
+                        dns2=$2;
+                        shift;shift;;
+                * )
+                        echo "Unrecognized option $1" 1>&2 ;
+                        usage 1>&2 ;
+                        exit 2 ;;
+        esac
+done
+
+
+diff <(nmap -sL --dns-servers $dns1 $subnets | grep -v "Nmap done:") <(nmap -sL --dns-servers $dns2 $subnets | grep -v "Nmap done:"
